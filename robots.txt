@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /legal/
+
+# 請將下方網址換成您未來的真實網域
+Sitemap: https://your-domain.com/sitemap.xml

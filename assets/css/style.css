@@ -1,0 +1,29 @@
+/* 讓檔案列表在內容過多時可以滾動，但保持美觀 */
+#file-list {
+    max-height: 500px;
+    overflow-y: auto;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+/* Chrome, Edge, Safari 的滾動條樣式 */
+#file-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#file-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#file-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+/* 當 PWA 安裝後，調整頂部安全距離 (針對 iOS) */
+@media all and (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+    }
+}
