@@ -5,8 +5,9 @@ const translations = {
         "drag_drop_subtitle": "或者點擊上傳 (支援批量)",
         "files_selected": "個檔案",
         "btn_clear": "清空列表",
-        "btn_convert_all": "全部轉換並下載",
+        "btn_convert_all": "全部轉換並下載 ZIP",
         "label_quality": "畫質: ",
+        "btn_install": "安裝 App", // PWA Button
 
         // 狀態訊息
         "status_waiting": "等待中...",
@@ -15,7 +16,7 @@ const translations = {
         "download_single": "下載",
         "error_file_type": "請上傳 WebP 格式的圖片",
 
-        // SEO & FAQ 內容 (之前缺少的)
+        // SEO & FAQ
         "seo_title": "為什麼選擇我們的 WebP 轉 JPG 工具？",
         "feat_privacy_title": "隱私絕對安全 (Privacy First)",
         "feat_privacy_desc": "我們採用 HTML5 Canvas 技術，所有圖片轉換皆在您的裝置 (Local) 完成。圖片絕不上傳到任何伺服器，這是最安全的轉換方式。",
@@ -33,8 +34,9 @@ const translations = {
         "drag_drop_subtitle": "Or click to upload (Batch supported)",
         "files_selected": "files selected",
         "btn_clear": "Clear All",
-        "btn_convert_all": "Convert All & Download",
+        "btn_convert_all": "Convert All & Download ZIP",
         "label_quality": "Quality: ",
+        "btn_install": "Install App", // PWA Button
 
         // Status Messages
         "status_waiting": "Waiting...",
@@ -43,7 +45,7 @@ const translations = {
         "download_single": "Download",
         "error_file_type": "Please upload WebP images only",
 
-        // SEO & FAQ Content (Added)
+        // SEO & FAQ Content
         "seo_title": "Why Choose Our WebP to JPG Converter?",
         "feat_privacy_title": "Privacy First",
         "feat_privacy_desc": "We use HTML5 Canvas technology so all conversions happen locally on your device. Your images are NEVER uploaded to any server.",

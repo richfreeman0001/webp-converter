@@ -10,16 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const langSwitch = document.getElementById('lang-switch');
     const qualitySlider = document.getElementById('quality-slider');
     const qualityLabel = document.querySelector('label[data-i18n="label_quality"]');
+    const installBtn = document.getElementById('install-btn'); // PWA Install Button
 
     // --- State ---
     let currentFiles = [];
     let currentLang = 'zh-TW';
+    let deferredPrompt; // PWA Event Stash
 
     // --- Initialization ---
     updateLanguage(currentLang);
     updateQualityLabel();
 
     // --- Event Listeners ---
+
+    // 1. File Upload Logic
     dropZone.addEventListener('click', () => fileInput.click());
 
     dropZone.addEventListener('dragover', (e) => {
@@ -39,20 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
+    // 2. Language & Quality
     langSwitch.addEventListener('change', (e) => {
         currentLang = e.target.value;
         updateLanguage(currentLang);
     });
 
+    qualitySlider.addEventListener('input', updateQualityLabel);
+
+    // 3. Clear List
     clearBtn.addEventListener('click', () => {
         currentFiles = [];
         fileInput.value = '';
         renderFileList();
     });
 
-    qualitySlider.addEventListener('input', updateQualityLabel);
-
-    // ★★★ 重點修改：批量轉換並打包下載 ★★★
+    // 4. Convert All + ZIP Download
     convertAllBtn.addEventListener('click', async () => {
         if (currentFiles.length === 0) return;
 
@@ -60,43 +66,32 @@ document.addEventListener('DOMContentLoaded', () => {
         convertAllBtn.disabled = true;
         convertAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-        // 1. 初始化 ZIP 物件
         const zip = new JSZip();
         const quality = parseInt(qualitySlider.value) / 100;
         let processedCount = 0;
 
-        // 2. 逐一轉換
         for (let i = 0; i < currentFiles.length; i++) {
-            // 即便已經個別轉過，為了打包我們還是重新抓一次數據(速度很快)
-            // 或是這裡可以優化，但為了邏輯簡單，我們統一處理
+            // Get dataUrl for ZIP
             const jpgDataUrl = await processFile(currentFiles[i], items[i], quality, true);
 
             if (jpgDataUrl) {
-                // 去掉 DataURL 的檔頭 (data:image/jpeg;base64,)
                 const base64Data = jpgDataUrl.split(',')[1];
                 const newFileName = currentFiles[i].name.replace(/\.webp$/i, '.jpg');
-
-                // 加入 ZIP
                 zip.file(newFileName, base64Data, {base64: true});
                 processedCount++;
             }
         }
 
-        // 3. 如果有成功轉換的檔案，生成 ZIP 並下載
         if (processedCount > 0) {
-            const t = translations[currentLang];
-            // 更改按鈕文字提示正在打包
             const originalBtnText = convertAllBtn.textContent;
             convertAllBtn.textContent = "Zipping...";
 
             zip.generateAsync({type:"blob"}).then(function(content) {
-                // 建立下載連結
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(content);
                 link.download = "converted_images.zip";
                 link.click();
 
-                // 恢復按鈕
                 convertAllBtn.textContent = originalBtnText;
                 convertAllBtn.disabled = false;
                 convertAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -106,6 +101,30 @@ document.addEventListener('DOMContentLoaded', () => {
              convertAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
+
+    // 5. PWA Install Logic (New Integration)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.classList.remove('hidden');
+        console.log('PWA install prompt intercepted');
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response: ${outcome}`);
+        deferredPrompt = null;
+        installBtn.classList.add('hidden');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installBtn.classList.add('hidden');
+        deferredPrompt = null;
+        console.log('PWA was installed');
+    });
+
 
     // --- Core Functions ---
 
@@ -164,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 修改：增加 returnDataUrl 參數，讓我們可以拿到數據去打包
     function processFile(file, domElement, quality = 0.92, returnDataUrl = false) {
         return new Promise((resolve) => {
             const statusText = domElement.querySelector('.status-text');
@@ -197,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusText.className = 'status-text text-xs text-green-600 font-bold';
                     statusText.setAttribute('data-original-status', 'done');
 
-                    // 單張下載按鈕 (如果還沒加過)
                     if(!statusArea.querySelector('a')) {
                         const downloadBtn = document.createElement('a');
                         downloadBtn.href = jpgUrl;
@@ -207,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         statusArea.appendChild(downloadBtn);
                     }
 
-                    // 如果是批量模式，回傳 URL 給 ZIP 使用；否則直接結束
                     if (returnDataUrl) {
                         resolve(jpgUrl);
                     } else {
