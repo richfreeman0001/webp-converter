@@ -1,101 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-TW" itemscope itemtype="https://schema.org/WebPage">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>WebP 轉 JPG 轉換器 | 免費、離線、隱私優先 (WebP to JPG)</title>
-    <meta name="description" content="2025年最佳 WebP 轉 JPG 工具。支援批量轉換、100% 瀏覽器離線處理，照片不上傳伺服器。Free, Offline, Privacy-First WebP to JPG Converter.">
-    <link rel="canonical" href="https://your-domain.com/" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="WebP 轉 JPG 轉換器 - 隱私優先" />
-    <meta property="og:description" content="不需上傳伺服器，直接在瀏覽器運算的 WebP 轉檔神器。" />
-    <meta property="og:image" content="https://your-domain.com/assets/images/og-image.jpg" />
-    <meta property="og:url" content="https://your-domain.com/" />
-    <meta property="og:site_name" content="WebP Converter Tool" />
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
-    <link rel="apple-touch-icon" href="assets/images/icons/apple-touch-icon.png">
-
-    <script type="application/ld+json">
-    [
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "WebP to JPG Converter",
-        "headline": "Free Offline WebP to JPG Converter",
-        "url": "https://your-domain.com/",
-        "image": "https://your-domain.com/assets/images/og-image.jpg",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "Any",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "TWD"
-        },
-        "featureList": [
-          "100% Client-side Processing",
-          "No Server Upload",
-          "Batch Conversion Support",
-          "PWA Offline Capable"
-        ],
-        "author": {
-          "@type": "Person",
-          "name": "Web Tool Developer"
-        }
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "HowTo",
-        "name": "如何將 WebP 轉換為 JPG",
-        "step": [
-          {
-            "@type": "HowToStep",
-            "name": "上傳圖片",
-            "text": "將 WebP 檔案拖曳至上傳區，或點擊選擇檔案。"
-          },
-          {
-            "@type": "HowToStep",
-            "name": "等待轉換",
-            "text": "系統會透過瀏覽器 Canvas 自動進行轉換，速度極快。"
-          },
-          {
-            "@type": "HowToStep",
-            "name": "下載檔案",
-            "text": "點擊下載按鈕保存 JPG 圖片，或使用批量下載功能。"
-          }
-        ]
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "這個工具是否會上傳我的照片？",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "不會。本工具使用 HTML5 技術，所有轉換都在您的裝置上完成，沒有任何照片會傳送到伺服器。"
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "沒有網路可以使用嗎？",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "可以。本工具支援 PWA 技術，安裝後即可在離線狀態下使用。"
-            }
-          }
-        ]
-      }
-    ]
-    </script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
 <body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
 
     <nav class="bg-white shadow-sm sticky top-0 z-50">
@@ -128,11 +30,23 @@
                 </div>
             </div>
 
-            <div id="action-bar" class="hidden mt-6 flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                <span class="text-sm font-medium text-gray-600"><span id="file-count">0</span> <span data-i18n="files_selected">個檔案</span></span>
-                <div class="flex gap-3">
-                    <button id="clear-btn" class="px-4 py-2 text-red-500 hover:bg-red-50 rounded transition text-sm font-medium" data-i18n="btn_clear">清空</button>
-                    <button id="convert-all-btn" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition font-medium" data-i18n="btn_convert_all">全部轉換並下載</button>
+            <div id="action-bar" class="hidden mt-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+
+                <span class="text-sm font-medium text-gray-600 self-start md:self-center">
+                    <span id="file-count">0</span> <span data-i18n="files_selected">個檔案</span>
+                </span>
+
+                <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+
+                    <div class="flex items-center gap-2 border-r border-gray-200 pr-4 mr-2">
+                        <label for="quality-slider" class="text-sm text-gray-600 font-medium" data-i18n="label_quality">畫質: 90%</label>
+                        <input type="range" id="quality-slider" min="10" max="100" value="90" class="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    </div>
+
+                    <div class="flex gap-3 w-full md:w-auto">
+                        <button id="clear-btn" class="flex-1 md:flex-none px-4 py-2 text-red-500 hover:bg-red-50 rounded transition text-sm font-medium" data-i18n="btn_clear">清空</button>
+                        <button id="convert-all-btn" class="flex-1 md:flex-none px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition font-medium whitespace-nowrap" data-i18n="btn_convert_all">全部轉換</button>
+                    </div>
                 </div>
             </div>
 
@@ -145,28 +59,28 @@
             <div class="grid md:grid-cols-2 gap-8 mb-10">
                 <section>
                     <h3 class="font-bold text-gray-700 mb-2 flex items-center gap-2">
-                        <span class="text-green-500">✓</span> 隱私絕對安全 (Privacy First)
+                        <span class="text-green-500">✓</span> <span data-i18n="feat_privacy_title">隱私絕對安全</span>
                     </h3>
-                    <p class="text-sm">我們採用 <strong>HTML5 Canvas 技術</strong>，所有圖片轉換皆在您的裝置 (Local) 完成。圖片<span class="underline decoration-red-500">絕不上傳</span>到任何伺服器，這是最安全的轉換方式。</p>
+                    <p class="text-sm" data-i18n="feat_privacy_desc">我們採用 HTML5 Canvas 技術，所有圖片轉換皆在您的裝置 (Local) 完成。圖片絕不上傳到任何伺服器，這是最安全的轉換方式。</p>
                 </section>
                 <section>
                     <h3 class="font-bold text-gray-700 mb-2 flex items-center gap-2">
-                        <span class="text-blue-500">✓</span> 離線也能用 (Offline Ready)
+                        <span class="text-blue-500">✓</span> <span data-i18n="feat_offline_title">離線也能用</span>
                     </h3>
-                    <p class="text-sm">本工具支援 <strong>PWA (Progressive Web App)</strong> 技術。您可以將其安裝到桌面或手機，即便在沒有網路的環境下，也能隨時進行 WebP 轉 JPG。</p>
+                    <p class="text-sm" data-i18n="feat_offline_desc">本工具支援 PWA 技術。您可以將其安裝到桌面或手機，即便在沒有網路的環境下，也能隨時進行 WebP 轉 JPG。</p>
                 </section>
             </div>
 
             <section class="bg-blue-50 p-6 rounded-lg">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">常見問題 (FAQ)</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="faq_title">常見問題 (FAQ)</h3>
                 <div class="space-y-4">
                     <div>
-                        <h4 class="font-bold text-sm text-gray-700">Q: WebP 轉 JPG 需要付費嗎？</h4>
-                        <p class="text-sm text-gray-600">A: 完全免費，且無限制轉換數量。</p>
+                        <h4 class="font-bold text-sm text-gray-700" data-i18n="faq_q1">Q: WebP 轉 JPG 需要付費嗎？</h4>
+                        <p class="text-sm text-gray-600" data-i18n="faq_a1">A: 完全免費，且無限制轉換數量。</p>
                     </div>
                     <div>
-                        <h4 class="font-bold text-sm text-gray-700">Q: 為什麼要將 WebP 轉為 JPG？</h4>
-                        <p class="text-sm text-gray-600">A: 雖然 WebP 檔案較小，但某些舊版軟體或網站系統 (如舊版 Photoshop 或部分政府網站) 僅支援 JPG/PNG 格式。</p>
+                        <h4 class="font-bold text-sm text-gray-700" data-i18n="faq_q2">Q: 為什麼要將 WebP 轉為 JPG？</h4>
+                        <p class="text-sm text-gray-600" data-i18n="faq_a2">A: 雖然 WebP 檔案較小，但某些舊版軟體或網站系統僅支援 JPG/PNG 格式。</p>
                     </div>
                 </div>
             </section>
@@ -189,10 +103,7 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(() => console.log('SW Registered'))
-                .catch(err => console.error('SW Fail', err));
+            navigator.serviceWorker.register('/sw.js');
         }
     </script>
 </body>
-</html>

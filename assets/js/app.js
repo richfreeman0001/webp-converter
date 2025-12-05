@@ -9,12 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const convertAllBtn = document.getElementById('convert-all-btn');
     const langSwitch = document.getElementById('lang-switch');
 
+    // 新增：畫質滑桿相關元素
+    const qualitySlider = document.getElementById('quality-slider');
+    const qualityLabel = document.querySelector('label[data-i18n="label_quality"]');
+
     // --- State ---
     let currentFiles = [];
     let currentLang = 'zh-TW';
 
     // --- Initialization ---
     updateLanguage(currentLang);
+    updateQualityLabel(); // 初始化畫質顯示
 
     // --- Event Listeners ---
 
@@ -49,31 +54,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Clear List
     clearBtn.addEventListener('click', () => {
         currentFiles = [];
-        fileInput.value = ''; // Reset input
+        fileInput.value = '';
         renderFileList();
     });
 
-    // 6. Convert All
+    // 6. Quality Slider Change (即時更新顯示數值)
+    qualitySlider.addEventListener('input', updateQualityLabel);
+
+    // 7. Convert All
     convertAllBtn.addEventListener('click', async () => {
         const items = document.querySelectorAll('.file-item');
-        // Disable button to prevent double click
         convertAllBtn.disabled = true;
         convertAllBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
+        // 取得當前畫質設定 (0.1 ~ 1.0)
+        const quality = parseInt(qualitySlider.value) / 100;
+
         for (let i = 0; i < currentFiles.length; i++) {
-            // Only process if not already done
             if (!currentFiles[i].isProcessed) {
-                await processFile(currentFiles[i], items[i]);
+                // 傳入畫質參數
+                await processFile(currentFiles[i], items[i], quality);
                 currentFiles[i].isProcessed = true;
             }
         }
 
-        // Re-enable button
         convertAllBtn.disabled = false;
         convertAllBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     });
 
     // --- Core Functions ---
+
+    function updateQualityLabel() {
+        const t = translations[currentLang];
+        // 顯示格式： "畫質: 90%" 或 "Quality: 90%"
+        qualityLabel.textContent = `${t.label_quality}${qualitySlider.value}%`;
+    }
 
     function handleFiles(files) {
         const validFiles = Array.from(files).filter(f => f.type === 'image/webp');
@@ -83,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Add to state (mark as not processed yet)
         const newFiles = validFiles.map(f => {
             f.isProcessed = false;
             return f;
@@ -97,18 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
         fileList.innerHTML = '';
         fileCountSpan.textContent = currentFiles.length;
 
-        // Toggle Action Bar visibility
         if (currentFiles.length > 0) {
             actionBar.classList.remove('hidden');
+            actionBar.classList.add('flex'); // 確保使用 Flex 佈局
         } else {
             actionBar.classList.add('hidden');
+            actionBar.classList.remove('flex');
         }
 
         currentFiles.forEach((file, index) => {
             const size = (file.size / 1024).toFixed(1) + ' KB';
             const t = translations[currentLang];
 
-            // Check if already processed to show correct status
             const statusText = file.isProcessed ? t.status_done : t.status_waiting;
             const statusClass = file.isProcessed ? 'text-green-600 font-bold' : 'text-gray-500';
 
@@ -130,7 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function processFile(file, domElement) {
+    // 新增 quality 參數
+    function processFile(file, domElement, quality = 0.92) {
         return new Promise((resolve) => {
             const statusText = domElement.querySelector('.status-text');
             const statusArea = domElement.querySelector('.status-area');
@@ -147,32 +162,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = event.target.result;
 
                 img.onload = () => {
-                    // Create Canvas
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width;
                     canvas.height = img.height;
 
                     const ctx = canvas.getContext('2d');
-
-                    // Fill White Background (handle transparency)
                     ctx.fillStyle = "#FFFFFF";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Draw Image
                     ctx.drawImage(img, 0, 0);
 
-                    // Convert to JPG (High Quality)
-                    const jpgUrl = canvas.toDataURL('image/jpeg', 0.92);
+                    // 使用動態畫質參數
+                    const jpgUrl = canvas.toDataURL('image/jpeg', quality);
 
-                    // Update UI
                     statusText.textContent = t.status_done;
                     statusText.className = 'status-text text-xs text-green-600 font-bold';
                     statusText.setAttribute('data-original-status', 'done');
 
-                    // Create Download Link
                     const downloadBtn = document.createElement('a');
                     downloadBtn.href = jpgUrl;
-                    downloadBtn.download = file.name.replace(/\.webp$/i, '.jpg'); // Regex replace
+                    downloadBtn.download = file.name.replace(/\.webp$/i, '.jpg');
                     downloadBtn.className = "text-xs bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200 transition ml-2 flex items-center gap-1";
                     downloadBtn.innerHTML = `<span>⬇</span> ${t.download_single}`;
 
@@ -195,7 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (t[key]) el.textContent = t[key];
         });
 
-        // 2. Dynamic List Items (Status Text)
+        // 2. Update Quality Label specifically (since it has dynamic value)
+        updateQualityLabel();
+
+        // 3. Dynamic List Items
         document.querySelectorAll('.file-item').forEach(item => {
             const status = item.querySelector('.status-text');
             const originalStatus = status.getAttribute('data-original-status');
@@ -206,10 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 status.textContent = t.status_done;
             }
 
-            // Update download buttons if they exist
             const dlBtn = item.querySelector('a');
             if (dlBtn) {
-                 // Keep the icon, update text
                  dlBtn.innerHTML = `<span>⬇</span> ${t.download_single}`;
             }
         });
