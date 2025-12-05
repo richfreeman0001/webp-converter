@@ -129,4 +129,22 @@
     </main>
 
     <footer class="bg-gray-100 py-6 mt-8 border-t border-gray-200">
-        <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-5
+        <div class="max-w-4xl mx-auto px-4 text-center text-sm text-gray-500">
+            <p>&copy; 2025 WebP Converter Tool. All rights reserved.</p>
+            <div class="mt-2 space-x-4">
+                <a href="legal/privacy.html" class="hover:text-blue-600 underline" rel="nofollow">Privacy Policy</a>
+                <a href="legal/terms.html" class="hover:text-blue-600 underline" rel="nofollow">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+</body>
+</html>
